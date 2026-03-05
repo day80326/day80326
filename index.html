@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Menú Principal</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    background:linear-gradient(135deg,#ffd6ec,#ffe6f7,#fff0fb);
+    font-family:'Segoe UI',sans-serif;
+    overflow:hidden;
+}
+
+h1{
+    font-size:40px;
+    margin-bottom:40px;
+    color:#d63384;
+    text-shadow:0 0 10px rgba(255,105,180,0.4);
+}
+
+.menu-btn{
+    padding:15px 35px;
+    border:none;
+    border-radius:30px;
+    background:linear-gradient(145deg,#ff66cc,#ff99dd);
+    color:white;
+    font-size:18px;
+    cursor:pointer;
+    transition:0.3s;
+    box-shadow:0 5px 15px rgba(255,105,180,0.3);
+}
+
+.menu-btn:hover{
+    transform:scale(1.05);
+}
+
+/* BOTÓN MÚSICA */
+.music-btn{
+    position:fixed;
+    bottom:20px;
+    right:20px;
+    width:55px;
+    height:55px;
+    border-radius:50%;
+    border:none;
+    background:rgba(255,255,255,0.6);
+    backdrop-filter:blur(6px);
+    font-size:22px;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.music-btn:hover{
+    transform:scale(1.1);
+}
+
+/* CORAZONES */
+.heart{
+    position:fixed;
+    bottom:-20px;
+    font-size:20px;
+    color:#ff4da6;
+    animation:floatUp linear infinite;
+}
+
+@keyframes floatUp{
+    from{transform:translateY(0) scale(1);opacity:1;}
+    to{transform:translateY(-110vh) scale(1.5);opacity:0;}
+}
+</style>
+</head>
+
+<body>
+
+<h1> Para Fer (la que no se baña)
+</h1>
+
+<button class="menu-btn" onclick="window.location.href='prin.html'">
+Abrir
+</button>
+
+<!-- 🎵 REPRODUCTOR MULTICANCIÓN -->
+<audio id="music" loop></audio>
+
+<div style="position:fixed;bottom:20px;right:20px;display:flex;gap:10px;z-index:999;">
+    <button onclick="toggleMusic()" style="width:50px;height:50px;border-radius:50%;border:none;background:rgba(255,255,255,0.6);backdrop-filter:blur(6px);cursor:pointer;">🎵</button>
+    <button onclick="nextSong()" style="width:50px;height:50px;border-radius:50%;border:none;background:rgba(255,255,255,0.6);backdrop-filter:blur(6px);cursor:pointer;">⏭</button>
+</div>
+
+<script>
+const music = document.getElementById("music");
+
+/* 🎶 LISTA DE CANCIONES */
+const playlist = [
+    "cancion1.mp3",
+    "cancion2.mp3",
+    "cancion3.mp3",
+    "cancion4.mp3",
+     "cancion5.mp3",
+    "cancion6.mp3",
+    "cancion7.mp3",
+    "cancion8.mp3",
+     "cancion9.mp3",
+    "cancion10.mp3",
+    "cancion11.mp3"
+];
+
+let currentSong = parseInt(localStorage.getItem("currentSong")) || 0;
+
+/* Cargar canción guardada */
+music.src = playlist[currentSong];
+
+/* Restaurar estado */
+window.addEventListener("load",()=>{
+    const savedTime = localStorage.getItem("musicTime");
+    const wasPlaying = localStorage.getItem("musicPlaying");
+
+    if(savedTime){
+        music.currentTime = parseFloat(savedTime);
+    }
+
+    if(wasPlaying === "true"){
+        music.play();
+    }
+});
+
+/* Guardar tiempo */
+music.addEventListener("timeupdate",()=>{
+    localStorage.setItem("musicTime", music.currentTime);
+});
+
+/* Guardar antes de salir */
+window.addEventListener("beforeunload",()=>{
+    localStorage.setItem("musicTime", music.currentTime);
+});
+
+/* ▶ / ⏸ */
+function toggleMusic(){
+    if(music.paused){
+        music.play();
+        localStorage.setItem("musicPlaying","true");
+    }else{
+        music.pause();
+        localStorage.setItem("musicPlaying","false");
+    }
+}
+
+/* ⏭ Cambiar canción */
+function nextSong(){
+    currentSong = (currentSong + 1) % playlist.length;
+    localStorage.setItem("currentSong", currentSong);
+    localStorage.setItem("musicTime", 0);
+    music.src = playlist[currentSong];
+    music.play();
+    localStorage.setItem("musicPlaying","true");
+}
+
+/* ❤️ CORAZONES */
+function createHeart(){
+    const heart = document.createElement("div");
+    heart.classList.add("heart");
+    heart.innerHTML = "❤";
+    heart.style.left = Math.random() * 100 + "%";
+    heart.style.animationDuration = (4 + Math.random() * 3) + "s";
+    document.body.appendChild(heart);
+
+    setTimeout(() => heart.remove(), 7000);
+}
+
+setInterval(createHeart, 500);
+
+</script>
+
+</body>
+</html>
